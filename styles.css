@@ -1,0 +1,1041 @@
+:root {
+    --primary-color: #3b82f6;
+    --primary-dark: #2563eb;
+    --secondary-color: #10b981;
+    --text-color: #1f2937;
+    --light-text: #6b7280;
+    --lighter-bg: #f9fafb;
+    --light-bg: #f3f4f6;
+    --border-color: #e5e7eb;
+    --card-bg: #ffffff;
+    --header-bg: #1e3a8a;
+    --header-text: #ffffff;
+    --winner-color: #fbbf24;
+    --danger-color: #ef4444;
+    --success-color: #10b981;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--lighter-bg);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+header {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.user-info {
+    display: flex;
+    gap: 20px;
+    font-weight: 600;
+}
+
+/* Navigation */
+nav {
+    background-color: var(--light-bg);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+nav ul li {
+    margin: 0;
+}
+
+nav ul li button {
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1rem;
+    color: var(--text-color);
+    position: relative;
+    transition: all 0.2s;
+}
+
+nav ul li.active button {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+nav ul li.active button::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
+nav ul li button:hover {
+    color: var(--primary-color);
+}
+
+/* Main Content */
+main {
+    min-height: calc(100vh - 200px);
+    padding-bottom: 40px;
+}
+
+/* Game Setup */
+.game-setup {
+    max-width: 600px;
+    margin: 40px auto;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+.game-setup h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-dark);
+}
+
+.setup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+}
+
+.form-group input, 
+.form-group select {
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+}
+
+/* Buttons */
+.primary-btn {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-dark);
+}
+
+.primary-btn:disabled {
+    background-color: var(--light-text);
+    cursor: not-allowed;
+}
+
+.secondary-btn {
+    background-color: var(--light-text);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.secondary-btn:hover {
+    background-color: #4b5563;
+}
+
+.secondary-btn:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+/* Players list */
+.players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.player-card {
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg);
+    border-radius: 6px;
+    padding: 15px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.current-player {
+    border-left: 4px solid var(--primary-color);
+}
+
+.player-rank {
+    background-color: var(--light-bg);
+    color: var(--text-color);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    margin-right: 15px;
+}
+
+.player-info {
+    flex: 1;
+}
+
+.player-info h3 {
+    margin-bottom: 5px;
+}
+
+.player-stats {
+    display: flex;
+    gap: 15px;
+    color: var(--light-text);
+    font-size: 0.9rem;
+}
+
+/* Squad */
+.squad-container {
+    margin-top: 20px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.squad-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.squad-stats {
+    display: flex;
+    gap: 20px;
+}
+
+.formation {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-around;
+}
+
+.player-position {
+    flex: 1;
+    max-width: 200px;
+    margin: 0 10px;
+}
+
+.squad-card {
+    flex-direction: column;
+    text-align: center;
+    height: 100%;
+}
+
+.squad-card .player-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.squad-card .player-team {
+    color: var(--light-text);
+    margin-bottom: 10px;
+}
+
+.squad-card .player-stats {
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+}
+
+/* Market */
+.market-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.market-section h3 {
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.market-players {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.market-card {
+    height: 100%;
+}
+
+.market-card .player-card {
+    flex-direction: column;
+    height: 100%;
+}
+
+.market-btn {
+    margin-top: auto;
+    padding: 8px 15px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    margin-top: 10px;
+}
+
+.market-btn.sell {
+    background-color: var(--danger-color);
+}
+
+.market-btn:disabled {
+    background-color: var(--light-text);
+    cursor: not-allowed;
+}
+
+/* Calendar */
+.calendar-status {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--card-bg);
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.current-day {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.next-match {
+    margin-bottom: 30px;
+}
+
+.next-match .match-card {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.calendar {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.calendar-day h3 {
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.day-matches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+}
+
+.match-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.match-card.simulated {
+    background-color: var(--light-bg);
+}
+
+.match-card.current {
+    border: 2px solid var(--primary-color);
+}
+
+.match-card .team {
+    flex: 1;
+    text-align: center;
+}
+
+.match-card .versus,
+.match-card .result {
+    font-weight: 600;
+    padding: 0 10px;
+}
+
+/* Match summary */
+.match-history {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.match-summary {
+    background-color: var(--card-bg);
+    border-radius: 6px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.match-header h3 {
+    color: var(--primary-dark);
+    margin-bottom: 15px;
+}
+
+.match-events,
+.player-points {
+    margin-top: 15px;
+}
+
+.match-events h4,
+.player-points h4 {
+    margin-bottom: 10px;
+}
+
+.match-events ul,
+.player-points ul {
+    padding-left: 20px;
+}
+
+/* Standings */
+.standings-table {
+    overflow-x: auto;
+}
+
+.standings-table table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.standings-table th,
+.standings-table td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.standings-table th {
+    background-color: var(--light-bg);
+    font-weight: 600;
+}
+
+.standings-table tbody tr:hover {
+    background-color: var(--light-bg);
+}
+
+.standings-filter {
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.standings-filter select {
+    padding: 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.team-stats {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: var(--light-bg);
+    border-radius: 6px;
+}
+
+.squad-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.team-row {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.team-row:hover {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+/* Inventory */
+.inventory-section {
+    margin-top: 30px;
+    background-color: var(--card-bg);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.inventory-filter {
+    margin-bottom: 15px;
+}
+
+.inventory-filter select {
+    padding: 8px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: inherit;
+}
+
+.inventory-players {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.action-btn {
+    margin-top: 10px;
+    padding: 8px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.action-btn:disabled {
+    background-color: var(--light-text);
+    cursor: not-allowed;
+}
+
+.market-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.market-filters {
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+/* Market offers */
+.offers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.offer-card {
+    background-color: var(--lighter-bg);
+    padding: 15px;
+    border-radius: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.offer-details {
+    flex: 1;
+}
+
+.offer-player {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+
+.offer-bidder, .offer-amount {
+    font-size: 0.9rem;
+    color: var(--light-text);
+}
+
+.offer-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.danger-btn {
+    background-color: var(--danger-color);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+/* Match simulation */
+.match-simulation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.simulation-container {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.simulation-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--primary-dark);
+}
+
+.match-teams {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.home-team, .away-team {
+    flex: 1;
+    text-align: center;
+}
+
+.scoreboard {
+    font-size: 2rem;
+    font-weight: 700;
+    padding: 0 20px;
+}
+
+.match-log {
+    margin-bottom: 30px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 15px;
+}
+
+.match-event {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.match-event:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+/* Game finished */
+.game-finished {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.results-container {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.results-container h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: var(--primary-dark);
+    font-size: 2rem;
+}
+
+.final-standings {
+    margin-bottom: 30px;
+}
+
+.final-standings h3 {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.winner {
+    background-color: rgba(251, 191, 36, 0.1);
+    border: 2px solid var(--winner-color);
+    position: relative;
+}
+
+.winner-badge {
+    position: absolute;
+    right: 15px;
+    font-size: 2rem;
+}
+
+/* Footer */
+footer {
+    background-color: var(--header-bg);
+    color: var(--header-text);
+    text-align: center;
+    padding: 15px;
+    font-size: 0.9rem;
+}
+
+/* New styles for notifications */
+.notification-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    margin-left: 10px;
+}
+
+.notification-icon {
+    font-size: 1.4rem;
+}
+
+.notification-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 5px;
+    border-radius: 50%;
+    min-width: 15px;
+    text-align: center;
+}
+
+.notifications-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 350px;
+    height: 100vh;
+    background-color: var(--card-bg);
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--light-text);
+}
+
+.notifications-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    position: relative;
+}
+
+.notification-item.unread {
+    background-color: rgba(59, 130, 246, 0.1);
+}
+
+.notification-content {
+    margin-bottom: 5px;
+}
+
+.notification-time {
+    font-size: 0.8rem;
+    color: var(--light-text);
+}
+
+.read-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.notifications-actions {
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--border-color);
+}
+
+.no-notifications {
+    padding: 20px;
+    text-align: center;
+    color: var(--light-text);
+}
+
+.notification-item .notification-category {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-right: 5px;
+}
+
+.notification-category.personal {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.notification-category.general {
+    background-color: var(--light-text);
+    color: white;
+}
+
+/* Timeline styles */
+.match-timeline {
+    margin: 30px 0;
+}
+
+.timeline-container {
+    position: relative;
+    height: 120px;
+    width: 100%;
+    padding: 20px 0;
+}
+
+.timeline-track {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: var(--border-color);
+    transform: translateY(-50%);
+}
+
+.timeline-event {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30px;
+    margin-left: -15px;
+}
+
+.event-minute {
+    font-size: 0.7rem;
+    margin-bottom: 5px;
+}
+
+.event-indicator {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: var(--light-text);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    font-size: 0.8rem;
+}
+
+.timeline-event.goal-event .event-indicator {
+    background-color: var(--success-color);
+    width: 24px;
+    height: 24px;
+}
+
+.event-details {
+    position: absolute;
+    bottom: -30px;
+    width: 120px;
+    text-align: center;
+    font-size: 0.8rem;
+    word-break: break-word;
+    white-space: normal;
+}
+
+.timeline-event:nth-child(odd) .event-details {
+    bottom: auto;
+    top: -30px;
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 30px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.modal-content h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .notifications-panel {
+        width: 100%;
+    }
+    
+    .match-timeline {
+        height: 150px;
+    }
+    
+    .event-details {
+        width: 80px;
+    }
+    
+    .market-players,
+    .day-matches {
+        grid-template-columns: 1fr;
+    }
+    
+    .player-stats {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .calendar-status {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .user-info {
+        flex-direction: column;
+        gap: 5px;
+        text-align: right;
+    }
+    
+    .match-teams {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .scoreboard {
+        margin: 20px 0;
+    }
+}
