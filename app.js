@@ -88,173 +88,197 @@ const app = createApp({
       'Kingseeker Frampt'
     ];
     
-    // Iniciar los datos de futbolistas
+    // Nuevas variables de estado
+    const isMobileUI = ref(false);
+    const devMode = ref(false);
+    const devModeClicks = ref(0);
+    const selectedPlayerToEdit = ref(null);
+    const editingPlayer = ref(null);
+    const bannedWords = ['polla', 'pito', 'chocho', 'maricon'];
+
+    watch(selectedPlayerToEdit, (newPlayerId) => {
+      if (newPlayerId) {
+        const playerDetails = footballers.value.find(p => p.id === newPlayerId);
+        if (playerDetails) {
+          editingPlayer.value = { 
+            ...playerDetails, 
+            injured: playerDetails.injured || false,
+            injuryGamesLeft: playerDetails.injuryGamesLeft || 0 
+          }; 
+        } else {
+          editingPlayer.value = null; // Player not found
+        }
+      } else {
+        editingPlayer.value = null; // No player selected
+      }
+    });
+
     const initFootballers = () => {
       const data = [
         // FC Hollowborn
-        { name: 'Artorias', team: 'FC Hollowborn', cost: 85000, quality: 94, position: 'DFC' },
-        { name: 'Solaire', team: 'FC Hollowborn', cost: 45000, quality: 82, position: 'MCE' },
-        { name: 'Gwyn', team: 'FC Hollowborn', cost: 88000, quality: 96, position: 'ATQ' },
-        { name: 'Ornstein', team: 'FC Hollowborn', cost: 55000, quality: 85, position: 'DFC' },
-        { name: 'Smough', team: 'FC Hollowborn', cost: 47000, quality: 83, position: 'DFC' },
-        { name: 'Siegmeyer', team: 'FC Hollowborn', cost: 38000, quality: 78, position: 'MCE' },
-        { name: 'Gwynevere', team: 'FC Hollowborn', cost: 30000, quality: 74, position: 'MCE' },
-        { name: 'Lautrec', team: 'FC Hollowborn', cost: 26000, quality: 72, position: 'MCE' },
-        { name: 'Priscilla', team: 'FC Hollowborn', cost: 69000, quality: 90, position: 'ATQ' },
+        { name: 'Artorias', team: 'FC Hollowborn', cost: 85000, quality: 94, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Solaire', team: 'FC Hollowborn', cost: 45000, quality: 82, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Gwyn', team: 'FC Hollowborn', cost: 88000, quality: 96, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ornstein', team: 'FC Hollowborn', cost: 55000, quality: 85, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Smough', team: 'FC Hollowborn', cost: 47000, quality: 83, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Siegmeyer', team: 'FC Hollowborn', cost: 38000, quality: 78, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Gwynevere', team: 'FC Hollowborn', cost: 30000, quality: 74, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lautrec', team: 'FC Hollowborn', cost: 26000, quality: 72, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Priscilla', team: 'FC Hollowborn', cost: 69000, quality: 90, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Royal Velvet
-        { name: 'Elizabeth', team: 'FC Royal Velvet', cost: 83000, quality: 93, position: 'ATQ' },
-        { name: 'Theodore', team: 'FC Royal Velvet', cost: 40000, quality: 80, position: 'MCE' },
-        { name: 'Margaret', team: 'FC Royal Velvet', cost: 63000, quality: 87, position: 'MCE' },
-        { name: 'Igor', team: 'FC Royal Velvet', cost: 46000, quality: 82, position: 'MCE' },
-        { name: 'Lavenza', team: 'FC Royal Velvet', cost: 74000, quality: 91, position: 'MCE' },
-        { name: 'Justine', team: 'FC Royal Velvet', cost: 33000, quality: 75, position: 'DFC' },
-        { name: 'Caroline', team: 'FC Royal Velvet', cost: 33000, quality: 75, position: 'DFC' },
-        { name: 'Marie', team: 'FC Royal Velvet', cost: 36000, quality: 78, position: 'ATQ' },
-        { name: 'Sho Minazuki', team: 'FC Royal Velvet', cost: 68000, quality: 89, position: 'ATQ' },
+        { name: 'Elizabeth', team: 'FC Royal Velvet', cost: 83000, quality: 93, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Theodore', team: 'FC Royal Velvet', cost: 40000, quality: 80, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Margaret', team: 'FC Royal Velvet', cost: 63000, quality: 87, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Igor', team: 'FC Royal Velvet', cost: 46000, quality: 82, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lavenza', team: 'FC Royal Velvet', cost: 74000, quality: 91, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Justine', team: 'FC Royal Velvet', cost: 33000, quality: 75, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Caroline', team: 'FC Royal Velvet', cost: 33000, quality: 75, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Marie', team: 'FC Royal Velvet', cost: 36000, quality: 78, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Sho Minazuki', team: 'FC Royal Velvet', cost: 68000, quality: 89, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Liyue Phantoms
-        { name: 'Xiao', team: 'FC Liyue Phantoms', cost: 81000, quality: 92, position: 'ATQ' },
-        { name: 'Ganyu', team: 'FC Liyue Phantoms', cost: 67000, quality: 89, position: 'MCE' },
-        { name: 'Zhongli', team: 'FC Liyue Phantoms', cost: 85000, quality: 94, position: 'DFC' },
-        { name: 'Hu Tao', team: 'FC Liyue Phantoms', cost: 62000, quality: 86, position: 'ATQ' },
-        { name: 'Shenhe', team: 'FC Liyue Phantoms', cost: 54000, quality: 84, position: 'MCE' },
-        { name: 'Yanfei', team: 'FC Liyue Phantoms', cost: 38000, quality: 78, position: 'MCE' },
-        { name: 'Qiqi', team: 'FC Liyue Phantoms', cost: 35000, quality: 76, position: 'DFC' },
-        { name: 'Ningguang', team: 'FC Liyue Phantoms', cost: 42000, quality: 80, position: 'MCE' },
-        { name: 'Chongyun', team: 'FC Liyue Phantoms', cost: 31000, quality: 74, position: 'DFC' },
+        { name: 'Xiao', team: 'FC Liyue Phantoms', cost: 81000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ganyu', team: 'FC Liyue Phantoms', cost: 67000, quality: 89, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Zhongli', team: 'FC Liyue Phantoms', cost: 85000, quality: 94, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Hu Tao', team: 'FC Liyue Phantoms', cost: 62000, quality: 86, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shenhe', team: 'FC Liyue Phantoms', cost: 54000, quality: 84, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yanfei', team: 'FC Liyue Phantoms', cost: 38000, quality: 78, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Qiqi', team: 'FC Liyue Phantoms', cost: 35000, quality: 76, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ningguang', team: 'FC Liyue Phantoms', cost: 42000, quality: 80, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Chongyun', team: 'FC Liyue Phantoms', cost: 31000, quality: 74, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Yharnam Moon
-        { name: 'Gehrman', team: 'FC Yharnam Moon', cost: 76000, quality: 89, position: 'DFC' },
-        { name: 'Lady Maria', team: 'FC Yharnam Moon', cost: 82000, quality: 91, position: 'ATQ' },
-        { name: 'Eileen the Crow', team: 'FC Yharnam Moon', cost: 38000, quality: 78, position: 'MCE' },
-        { name: 'The Doll', team: 'FC Yharnam Moon', cost: 33000, quality: 75, position: 'MCE' },
-        { name: 'Laurence', team: 'FC Yharnam Moon', cost: 49000, quality: 84, position: 'DFC' },
-        { name: 'Gascoigne', team: 'FC Yharnam Moon', cost: 41000, quality: 80, position: 'ATQ' },
-        { name: 'Vicar Amelia', team: 'FC Yharnam Moon', cost: 58000, quality: 86, position: 'DFC' },
-        { name: 'Micolash', team: 'FC Yharnam Moon', cost: 26000, quality: 73, position: 'MCE' },
-        { name: 'Rom', team: 'FC Yharnam Moon', cost: 67000, quality: 88, position: 'MCE' },
+        { name: 'Gehrman', team: 'FC Yharnam Moon', cost: 76000, quality: 89, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lady Maria', team: 'FC Yharnam Moon', cost: 82000, quality: 91, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Eileen the Crow', team: 'FC Yharnam Moon', cost: 38000, quality: 78, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'The Doll', team: 'FC Yharnam Moon', cost: 33000, quality: 75, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Laurence', team: 'FC Yharnam Moon', cost: 49000, quality: 84, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Gascoigne', team: 'FC Yharnam Moon', cost: 41000, quality: 80, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Vicar Amelia', team: 'FC Yharnam Moon', cost: 58000, quality: 86, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Micolash', team: 'FC Yharnam Moon', cost: 26000, quality: 73, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Rom', team: 'FC Yharnam Moon', cost: 67000, quality: 88, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Inaba United
-        { name: 'Yu Narukami', team: 'FC Inaba United', cost: 79000, quality: 92, position: 'ATQ' },
-        { name: 'Yosuke Hanamura', team: 'FC Inaba United', cost: 48000, quality: 83, position: 'MCE' },
-        { name: 'Chie Satonaka', team: 'FC Inaba United', cost: 41000, quality: 81, position: 'MCE' },
-        { name: 'Kanji Tatsumi', team: 'FC Inaba United', cost: 45000, quality: 84, position: 'DFC' },
-        { name: 'Naoto Shirogane', team: 'FC Inaba United', cost: 52000, quality: 85, position: 'MCE' },
-        { name: 'Rise Kujikawa', team: 'FC Inaba United', cost: 38000, quality: 78, position: 'MCE' },
-        { name: 'Teddie', team: 'FC Inaba United', cost: 36000, quality: 77, position: 'DFC' },
-        { name: 'Adachi', team: 'FC Inaba United', cost: 62000, quality: 87, position: 'ATQ' },
-        { name: 'Izanami', team: 'FC Inaba United', cost: 84000, quality: 94, position: 'ATQ' },
+        { name: 'Yu Narukami', team: 'FC Inaba United', cost: 79000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yosuke Hanamura', team: 'FC Inaba United', cost: 48000, quality: 83, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Chie Satonaka', team: 'FC Inaba United', cost: 41000, quality: 81, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Kanji Tatsumi', team: 'FC Inaba United', cost: 45000, quality: 84, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Naoto Shirogane', team: 'FC Inaba United', cost: 52000, quality: 85, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Rise Kujikawa', team: 'FC Inaba United', cost: 38000, quality: 78, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Teddie', team: 'FC Inaba United', cost: 36000, quality: 77, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Adachi', team: 'FC Inaba United', cost: 62000, quality: 87, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Izanami', team: 'FC Inaba United', cost: 84000, quality: 94, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Phantom Hearts
-        { name: 'Joker', team: 'FC Phantom Hearts', cost: 87000, quality: 95, position: 'ATQ' },
-        { name: 'Ryuji Sakamoto', team: 'FC Phantom Hearts', cost: 43000, quality: 82, position: 'ATQ' },
-        { name: 'Ann Takamaki', team: 'FC Phantom Hearts', cost: 47000, quality: 83, position: 'MCE' },
-        { name: 'Morgana', team: 'FC Phantom Hearts', cost: 35000, quality: 76, position: 'MCE' },
-        { name: 'Yusuke Kitagawa', team: 'FC Phantom Hearts', cost: 49000, quality: 84, position: 'MCE' },
-        { name: 'Makoto Niijima', team: 'FC Phantom Hearts', cost: 55000, quality: 86, position: 'DFC' },
-        { name: 'Haru Okumura', team: 'FC Phantom Hearts', cost: 42000, quality: 80, position: 'DFC' },
-        { name: 'Futaba Sakura', team: 'FC Phantom Hearts', cost: 27000, quality: 72, position: 'MCE' },
-        { name: 'Akechi', team: 'FC Phantom Hearts', cost: 81000, quality: 91, position: 'ATQ' },
+        { name: 'Joker', team: 'FC Phantom Hearts', cost: 87000, quality: 95, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ryuji Sakamoto', team: 'FC Phantom Hearts', cost: 43000, quality: 82, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ann Takamaki', team: 'FC Phantom Hearts', cost: 47000, quality: 83, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Morgana', team: 'FC Phantom Hearts', cost: 35000, quality: 76, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yusuke Kitagawa', team: 'FC Phantom Hearts', cost: 49000, quality: 84, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Makoto Niijima', team: 'FC Phantom Hearts', cost: 55000, quality: 86, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Haru Okumura', team: 'FC Phantom Hearts', cost: 42000, quality: 80, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Futaba Sakura', team: 'FC Phantom Hearts', cost: 27000, quality: 72, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Akechi', team: 'FC Phantom Hearts', cost: 81000, quality: 91, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Blue Butterfly
-        { name: 'Makoto Yuki', team: 'FC Blue Butterfly', cost: 86000, quality: 94, position: 'ATQ' },
-        { name: 'Yukari Takeba', team: 'FC Blue Butterfly', cost: 44000, quality: 82, position: 'MCE' },
-        { name: 'Junpei Iori', team: 'FC Blue Butterfly', cost: 39000, quality: 79, position: 'ATQ' },
-        { name: 'Mitsuru Kirijo', team: 'FC Blue Butterfly', cost: 62000, quality: 87, position: 'MCE' },
-        { name: 'Akihiko Sanada', team: 'FC Blue Butterfly', cost: 55000, quality: 85, position: 'DFC' },
-        { name: 'Aigis', team: 'FC Blue Butterfly', cost: 70000, quality: 90, position: 'DFC' },
-        { name: 'Koromaru', team: 'FC Blue Butterfly', cost: 29000, quality: 74, position: 'DFC' },
-        { name: 'Shinjiro Aragaki', team: 'FC Blue Butterfly', cost: 47000, quality: 83, position: 'DFC' },
-        { name: 'Ryoji Mochizuki', team: 'FC Blue Butterfly', cost: 80000, quality: 92, position: 'ATQ' },
+        { name: 'Makoto Yuki', team: 'FC Blue Butterfly', cost: 86000, quality: 94, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yukari Takeba', team: 'FC Blue Butterfly', cost: 44000, quality: 82, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Junpei Iori', team: 'FC Blue Butterfly', cost: 39000, quality: 79, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Mitsuru Kirijo', team: 'FC Blue Butterfly', cost: 62000, quality: 87, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Akihiko Sanada', team: 'FC Blue Butterfly', cost: 55000, quality: 85, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Aigis', team: 'FC Blue Butterfly', cost: 70000, quality: 90, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Koromaru', team: 'FC Blue Butterfly', cost: 29000, quality: 74, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shinjiro Aragaki', team: 'FC Blue Butterfly', cost: 47000, quality: 83, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ryoji Mochizuki', team: 'FC Blue Butterfly', cost: 80000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Ashen Ring
-        { name: 'Tarnished', team: 'FC Ashen Ring', cost: 79000, quality: 91, position: 'MCE' },
-        { name: 'Blaidd', team: 'FC Ashen Ring', cost: 51000, quality: 85, position: 'DFC' },
-        { name: 'Rya', team: 'FC Ashen Ring', cost: 33000, quality: 76, position: 'MCE' },
-        { name: 'Miriel', team: 'FC Ashen Ring', cost: 35000, quality: 77, position: 'MCE' },
-        { name: 'Patches', team: 'FC Ashen Ring', cost: 22000, quality: 70, position: 'MCE' },
-        { name: 'Alexander', team: 'FC Ashen Ring', cost: 41000, quality: 80, position: 'DFC' },
-        { name: 'Millicent', team: 'FC Ashen Ring', cost: 46000, quality: 83, position: 'MCE' },
-        { name: 'Ensha', team: 'FC Ashen Ring', cost: 28000, quality: 73, position: 'DFC' },
-        { name: 'Rykard', team: 'FC Ashen Ring', cost: 66000, quality: 89, position: 'ATQ' },
+        { name: 'Tarnished', team: 'FC Ashen Ring', cost: 79000, quality: 91, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Blaidd', team: 'FC Ashen Ring', cost: 51000, quality: 85, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Rya', team: 'FC Ashen Ring', cost: 33000, quality: 76, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Miriel', team: 'FC Ashen Ring', cost: 35000, quality: 77, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Patches', team: 'FC Ashen Ring', cost: 22000, quality: 70, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Alexander', team: 'FC Ashen Ring', cost: 41000, quality: 80, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Millicent', team: 'FC Ashen Ring', cost: 46000, quality: 83, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ensha', team: 'FC Ashen Ring', cost: 28000, quality: 73, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Rykard', team: 'FC Ashen Ring', cost: 66000, quality: 89, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Old Hunters
-        { name: 'Ludwig', team: 'FC Old Hunters', cost: 85000, quality: 94, position: 'DFC' },
-        { name: 'Brador', team: 'FC Old Hunters', cost: 43000, quality: 82, position: 'ATQ' },
-        { name: 'Valtr', team: 'FC Old Hunters', cost: 39000, quality: 78, position: 'DFC' },
-        { name: 'Djura', team: 'FC Old Hunters', cost: 33000, quality: 75, position: 'MCE' },
-        { name: 'Yamamura', team: 'FC Old Hunters', cost: 24000, quality: 71, position: 'DFC' },
-        { name: 'Lady Maria (2ª forma)', team: 'FC Old Hunters', cost: 80000, quality: 92, position: 'ATQ' },
-        { name: 'Adella', team: 'FC Old Hunters', cost: 29000, quality: 74, position: 'MCE' },
-        { name: 'Brainsucker', team: 'FC Old Hunters', cost: 20000, quality: 68, position: 'MCE' },
-        { name: 'Laurence (Beast)', team: 'FC Old Hunters', cost: 61000, quality: 86, position: 'DFC' },
+        { name: 'Ludwig', team: 'FC Old Hunters', cost: 85000, quality: 94, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Brador', team: 'FC Old Hunters', cost: 43000, quality: 82, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Valtr', team: 'FC Old Hunters', cost: 39000, quality: 78, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Djura', team: 'FC Old Hunters', cost: 33000, quality: 75, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yamamura', team: 'FC Old Hunters', cost: 24000, quality: 71, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lady Maria (2ª forma)', team: 'FC Old Hunters', cost: 80000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Adella', team: 'FC Old Hunters', cost: 29000, quality: 74, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Brainsucker', team: 'FC Old Hunters', cost: 20000, quality: 68, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Laurence (Beast)', team: 'FC Old Hunters', cost: 61000, quality: 86, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Abysswatchers
-        { name: 'Abyss Watcher', team: 'FC Abysswatchers', cost: 81000, quality: 93, position: 'ATQ' },
-        { name: 'Lothric', team: 'FC Abysswatchers', cost: 76000, quality: 89, position: 'MCE' },
-        { name: 'Lorian', team: 'FC Abysswatchers', cost: 78000, quality: 90, position: 'ATQ' },
-        { name: 'Firekeeper', team: 'FC Abysswatchers', cost: 44000, quality: 81, position: 'MCE' },
-        { name: 'Eygon of Carim', team: 'FC Abysswatchers', cost: 31000, quality: 75, position: 'DFC' },
-        { name: 'Anri of Astora', team: 'FC Abysswatchers', cost: 46000, quality: 83, position: 'DFC' },
-        { name: 'Hawkwood', team: 'FC Abysswatchers', cost: 22000, quality: 69, position: 'MCE' },
-        { name: 'Greirat', team: 'FC Abysswatchers', cost: 26000, quality: 72, position: 'MCE' },
-        { name: 'Pontiff Sulyvahn', team: 'FC Abysswatchers', cost: 67000, quality: 88, position: 'ATQ' },
+        { name: 'Abyss Watcher', team: 'FC Abysswatchers', cost: 81000, quality: 93, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lothric', team: 'FC Abysswatchers', cost: 76000, quality: 89, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Lorian', team: 'FC Abysswatchers', cost: 78000, quality: 90, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Firekeeper', team: 'FC Abysswatchers', cost: 44000, quality: 81, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Eygon of Carim', team: 'FC Abysswatchers', cost: 31000, quality: 75, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Anri of Astora', team: 'FC Abysswatchers', cost: 46000, quality: 83, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Hawkwood', team: 'FC Abysswatchers', cost: 22000, quality: 69, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Greirat', team: 'FC Abysswatchers', cost: 26000, quality: 72, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Pontiff Sulyvahn', team: 'FC Abysswatchers', cost: 67000, quality: 88, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Midnight TV
-        { name: 'Shadow Yu', team: 'FC Midnight TV', cost: 82000, quality: 92, position: 'ATQ' },
-        { name: 'Shadow Naoto', team: 'FC Midnight TV', cost: 69000, quality: 88, position: 'MCE' },
-        { name: 'Shadow Chie', team: 'FC Midnight TV', cost: 43000, quality: 80, position: 'ATQ' },
-        { name: 'Shadow Yosuke', team: 'FC Midnight TV', cost: 40000, quality: 79, position: 'MCE' },
-        { name: 'Shadow Kanji', team: 'FC Midnight TV', cost: 48000, quality: 84, position: 'DFC' },
-        { name: 'Shadow Rise', team: 'FC Midnight TV', cost: 51000, quality: 85, position: 'MCE' },
-        { name: 'Mitsuo', team: 'FC Midnight TV', cost: 37000, quality: 77, position: 'MCE' },
-        { name: 'Tohru Adachi (Awakened)', team: 'FC Midnight TV', cost: 79000, quality: 91, position: 'ATQ' },
-        { name: 'Ameno-sagiri', team: 'FC Midnight TV', cost: 88000, quality: 95, position: 'DFC' },
+        { name: 'Shadow Yu', team: 'FC Midnight TV', cost: 82000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Naoto', team: 'FC Midnight TV', cost: 69000, quality: 88, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Chie', team: 'FC Midnight TV', cost: 43000, quality: 80, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Yosuke', team: 'FC Midnight TV', cost: 40000, quality: 79, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Kanji', team: 'FC Midnight TV', cost: 48000, quality: 84, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Rise', team: 'FC Midnight TV', cost: 51000, quality: 85, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Mitsuo', team: 'FC Midnight TV', cost: 37000, quality: 77, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Tohru Adachi (Awakened)', team: 'FC Midnight TV', cost: 79000, quality: 91, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ameno-sagiri', team: 'FC Midnight TV', cost: 88000, quality: 95, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC Mementos Depths
-        { name: 'Shadow Akechi', team: 'FC Mementos Depths', cost: 85000, quality: 93, position: 'ATQ' },
-        { name: 'Cognitive Wakaba', team: 'FC Mementos Depths', cost: 45000, quality: 82, position: 'MCE' },
-        { name: 'Shadow Sae', team: 'FC Mementos Depths', cost: 60000, quality: 86, position: 'DFC' },
-        { name: 'Kamoshida (Shadow)', team: 'FC Mementos Depths', cost: 37000, quality: 78, position: 'ATQ' },
-        { name: 'Madarame (Shadow)', team: 'FC Mementos Depths', cost: 34000, quality: 76, position: 'MCE' },
-        { name: 'Okumura (Shadow)', team: 'FC Mementos Depths', cost: 33000, quality: 75, position: 'DFC' },
-        { name: 'Shido (Shadow)', team: 'FC Mementos Depths', cost: 73000, quality: 90, position: 'DFC' },
-        { name: 'Yaldabaoth', team: 'FC Mementos Depths', cost: 90000, quality: 99, position: 'DFC' },
-        { name: 'Jose', team: 'FC Mementos Depths', cost: 25000, quality: 71, position: 'MCE' },
+        { name: 'Shadow Akechi', team: 'FC Mementos Depths', cost: 85000, quality: 93, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Cognitive Wakaba', team: 'FC Mementos Depths', cost: 45000, quality: 82, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shadow Sae', team: 'FC Mementos Depths', cost: 60000, quality: 86, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Kamoshida (Shadow)', team: 'FC Mementos Depths', cost: 37000, quality: 78, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Madarame (Shadow)', team: 'FC Mementos Depths', cost: 34000, quality: 76, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Okumura (Shadow)', team: 'FC Mementos Depths', cost: 33000, quality: 75, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Shido (Shadow)', team: 'FC Mementos Depths', cost: 73000, quality: 90, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yaldabaoth', team: 'FC Mementos Depths', cost: 90000, quality: 99, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Jose', team: 'FC Mementos Depths', cost: 25000, quality: 71, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // ElHoyo CF
-        { name: 'Petisui', team: 'ElHoyo CF', cost: 84000, quality: 97, position: 'ATQ' },
-        { name: 'Yosuke Simeone', team: 'ElHoyo CF', cost: 61000, quality: 83, position: 'ATQ' },
-        { name: 'Dydier', team: 'ElHoyo CF', cost: 84000, quality: 92, position: 'ATQ' },
-        { name: 'Kent', team: 'ElHoyo CF', cost: 37670, quality: 75, position: 'MCE' },
-        { name: 'YosukeLover', team: 'ElHoyo CF', cost: 37000, quality: 80, position: 'MCE' },
-        { name: 'Elso', team: 'ElHoyo CF', cost: 81500, quality: 91, position: 'MCE' },
-        { name: 'Alex', team: 'ElHoyo CF', cost: 12010, quality: 59, position: 'DFC' },
-        { name: 'Alesin', team: 'ElHoyo CF', cost: 45090, quality: 69, position: 'DFC' },
-        { name: 'Luis', team: 'ElHoyo CF', cost: 49000, quality: 71, position: 'DFC' },
+        { name: 'Petisui', team: 'ElHoyo CF', cost: 84000, quality: 97, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Yosuke Simeone', team: 'ElHoyo CF', cost: 61000, quality: 83, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Dydier', team: 'ElHoyo CF', cost: 84000, quality: 92, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Kent', team: 'ElHoyo CF', cost: 37670, quality: 75, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'YosukeLover', team: 'ElHoyo CF', cost: 37000, quality: 80, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Elso', team: 'ElHoyo CF', cost: 81500, quality: 91, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Alex', team: 'ElHoyo CF', cost: 12010, quality: 59, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Alesin', team: 'ElHoyo CF', cost: 45090, quality: 69, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Luis', team: 'ElHoyo CF', cost: 49000, quality: 71, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // GP NERV
-        { name: 'Shinji Ikari', team: 'GP NERV', cost: 84000, quality: 93, position: 'ATQ' },
-        { name: 'Asuka Langley', team: 'GP NERV', cost: 77000, quality: 90, position: 'MCE' },
-        { name: 'Rei Ayanami', team: 'GP NERV', cost: 69000, quality: 88, position: 'MCE' },
-        { name: 'Kaworu Nagisa', team: 'GP NERV', cost: 81000, quality: 91, position: 'ATQ' },
-        { name: 'Misato Katsuragi', team: 'GP NERV', cost: 58000, quality: 85, position: 'MCE' },
-        { name: 'Ritsuko Akagi', team: 'GP NERV', cost: 42000, quality: 80, position: 'DFC' },
-        { name: 'Gendo Ikari', team: 'GP NERV', cost: 37000, quality: 77, position: 'DFC' },
-        { name: 'Eva-01 (Berserk Mode)', team: 'GP NERV', cost: 88000, quality: 96, position: 'DFC' },
-        { name: 'Mari Makinami', team: 'GP NERV', cost: 51000, quality: 84, position: 'ATQ' },
+        { name: 'Shinji Ikari', team: 'GP NERV', cost: 84000, quality: 93, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Asuka Langley', team: 'GP NERV', cost: 77000, quality: 90, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Rei Ayanami', team: 'GP NERV', cost: 69000, quality: 88, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Kaworu Nagisa', team: 'GP NERV', cost: 81000, quality: 91, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Misato Katsuragi', team: 'GP NERV', cost: 58000, quality: 85, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Ritsuko Akagi', team: 'GP NERV', cost: 42000, quality: 80, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Gendo Ikari', team: 'GP NERV', cost: 37000, quality: 77, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Eva-01 (Berserk Mode)', team: 'GP NERV', cost: 88000, quality: 96, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Mari Makinami', team: 'GP NERV', cost: 51000, quality: 84, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
         
         // FC FALCONS
-        { name: 'Guts', team: 'FC FALCONS', cost: 89000, quality: 96, position: 'ATQ' },
-        { name: 'Griffith', team: 'FC FALCONS', cost: 90000, quality: 98, position: 'MCE' },
-        { name: 'Casca', team: 'FC FALCONS', cost: 67000, quality: 88, position: 'MCE' },
-        { name: 'Skull Knight', team: 'FC FALCONS', cost: 85000, quality: 94, position: 'DFC' },
-        { name: 'Judeau', team: 'FC FALCONS', cost: 41000, quality: 80, position: 'MCE' },
-        { name: 'Serpico', team: 'FC FALCONS', cost: 44000, quality: 81, position: 'DFC' },
-        { name: 'Farnese', team: 'FC FALCONS', cost: 36000, quality: 76, position: 'DFC' },
-        { name: 'Isidro', team: 'FC FALCONS', cost: 29000, quality: 73, position: 'ATQ' },
-        { name: 'Zodd', team: 'FC FALCONS', cost: 86000, quality: 95, position: 'ATQ' }
+        { name: 'Guts', team: 'FC FALCONS', cost: 89000, quality: 96, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Griffith', team: 'FC FALCONS', cost: 90000, quality: 98, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Casca', team: 'FC FALCONS', cost: 67000, quality: 88, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Skull Knight', team: 'FC FALCONS', cost: 85000, quality: 94, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Judeau', team: 'FC FALCONS', cost: 41000, quality: 80, position: 'MCE', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Serpico', team: 'FC FALCONS', cost: 44000, quality: 81, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Farnese', team: 'FC FALCONS', cost: 36000, quality: 76, position: 'DFC', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Isidro', team: 'FC FALCONS', cost: 29000, quality: 73, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false },
+        { name: 'Zodd', team: 'FC FALCONS', cost: 86000, quality: 95, position: 'ATQ', goals: 0, injured: false, injuryGamesLeft: 0, hasGoldenBoot: false }
       ];
       
       // Añadir ID único y puntos a cada jugador
@@ -479,6 +503,11 @@ const app = createApp({
         playerSetup.value.nickname = 'Jugador';
       }
       
+      // Comprobar palabra malsonante
+      if (checkBannedWords(playerSetup.value.nickname)) {
+        return;
+      }
+      
       initFootballers();
       initTeamStandings();
       createSchedule();
@@ -496,6 +525,9 @@ const app = createApp({
       gameState.value = 'playing';
       currentDay.value = 1;
       setTab('players');
+      
+      // Agregar listener de teclado para modo desarrollador
+      window.addEventListener('keyup', handleDevModeKey);
     };
     
     // Inicializar jugadores para modo equipos
@@ -835,6 +867,7 @@ const app = createApp({
               // Asegurarse de que el jugador existe antes de actualizar sus stats
               if (scoringPlayer.points !== undefined) {
                 updatePlayerStatsForGoal(scoringPlayer);
+                scoringPlayer.goals++;
               }
             }
           } else {
@@ -857,6 +890,7 @@ const app = createApp({
               // Asegurarse de que el jugador existe antes de actualizar sus stats
               if (scoringPlayer.points !== undefined) {
                 updatePlayerStatsForGoal(scoringPlayer);
+                scoringPlayer.goals++;
               }
             }
           }
@@ -950,6 +984,11 @@ const app = createApp({
     const updatePlayerStatsForGoal = (player) => {
       // Esta función es un placeholder - los stats reales se actualizan después
       // cuando se procesa el resultado completo del partido
+      if (player.points !== undefined) {
+        player.points += 4;
+        player.quality += 2;
+        player.cost += 7000;
+      }
     };
     
     // Actualizar estadísticas de equipos
@@ -1139,23 +1178,25 @@ const app = createApp({
       if (positionCounts['MCE'] < 1) neededPositions.push('MCE');
       if (positionCounts['DFC'] < 1) neededPositions.push('DFC');
       
-      // Priorizar posiciones sin jugadores
+      // Priorizar la compra de posiciones necesarias
       if (neededPositions.length > 0) {
         for (const position of neededPositions) {
-          const availableForPosition = footballers.value.filter(p => p.owner === null && p.position === position);
+          const availableForPosition = marketPlayers.value.filter(p => p.position === position && p.cost <= ai.money);
           if (availableForPosition.length > 0) {
-            // Elegir el mejor jugador que podamos permitirnos para esta posición
-            const affordable = availableForPosition.filter(p => p.cost <= ai.money).sort((a, b) => b.quality - a.quality);
-            if (affordable.length > 0) {
-              const playerToBuy = affordable[0];
-              
-              // Comprar jugador
-              ai.money -= playerToBuy.cost;
-              ai.squad.push(playerToBuy);
-              playerToBuy.owner = ai.id;
-              
-              addNotification(`${ai.nickname} ha comprado a ${playerToBuy.name} por ${formatMoney(playerToBuy.cost)} (posición necesaria).`, 'general');
-            }
+            // Elegir el mejor jugador para esta posición
+            availableForPosition.sort((a, b) => b.quality - a.quality);
+            const playerToBuy = availableForPosition[0];
+            
+            // Comprar jugador
+            ai.money -= playerToBuy.cost;
+            ai.squad.push(playerToBuy);
+            playerToBuy.owner = ai.id;
+            
+            // Quitar del mercado
+            marketPlayers.value = marketPlayers.value.filter(p => p.id !== playerToBuy.id);
+            
+            addNotification(`${ai.nickname} ha comprado a ${playerToBuy.name} por ${formatMoney(playerToBuy.cost)} (posición necesaria).`, 'general');
+            return; // Comprar un jugador por ciclo
           }
         }
       }
@@ -1343,7 +1384,7 @@ const app = createApp({
     
     // Comportamiento de IA simple
     const simpleAIBehavior = (ai) => {
-      // Verificar si tenemos al menos un jugador por posición
+      // Verificar si tenemos las posiciones mínimas cubiertas
       const positionCounts = {
         'ATQ': ai.squad.filter(p => p.position === 'ATQ').length,
         'MCE': ai.squad.filter(p => p.position === 'MCE').length,
@@ -1355,7 +1396,7 @@ const app = createApp({
       if (positionCounts['MCE'] < 1) neededPositions.push('MCE');
       if (positionCounts['DFC'] < 1) neededPositions.push('DFC');
       
-      // Comprar jugadores de posiciones necesarias primero
+      // Priorizar la compra de posiciones necesarias
       if (neededPositions.length > 0) {
         for (const position of neededPositions) {
           const availableForPosition = marketPlayers.value.filter(p => p.position === position && p.cost <= ai.money);
@@ -2019,6 +2060,92 @@ const app = createApp({
       return players.value.filter(player => player.isAI);
     });
     
+    // Check banned words
+    const checkBannedWords = (nickname) => {
+      const lowerNick = nickname.toLowerCase();
+      for (const word of bannedWords) {
+        if (lowerNick.includes(word)) {
+          alert('¡Palabra malsonante detectada! Por favor, elige otro nickname.');
+          return true;
+        }
+      }
+      return false;
+    };
+    
+    // Toggle Mobile UI
+    const toggleMobileUI = () => {
+      isMobileUI.value = !isMobileUI.value;
+      document.body.classList.toggle('mobile-ui', isMobileUI.value);
+    };
+    
+    // Handle Dev Mode Key
+    const handleDevModeKey = (event) => {
+      if (event.key.toLowerCase() === 'u') {
+        devModeClicks.value++;
+        if (devModeClicks.value === 3) {
+          devMode.value = true;
+          alert('¡Modo desarrollador activado!');
+        } else if (devMode.value) {
+          devMode.value = false;
+          alert('Modo desarrollador desactivado.');
+          devModeClicks.value = 0; // Reset clicks
+        }
+        setTimeout(() => {
+          if (!devMode.value) { // Only reset if not activated
+            devModeClicks.value = 0;
+          }
+        }, 1000);
+      }
+    };
+    
+    // Edit Player
+    const editPlayer = (playerId) => {
+      const player = footballers.value.find(p => p.id === playerId);
+      if (player) {
+        editingPlayer.value = { 
+          ...player, 
+          injured: player.injured || false,
+          injuryGamesLeft: player.injuryGamesLeft || 0 
+        }; 
+      }
+    };
+    
+    // Save Player Edits
+    const savePlayerEdits = () => {
+      if (!editingPlayer.value) return;
+      
+      const player = footballers.value.find(p => p.id === editingPlayer.value.id);
+      if (player) {
+        Object.assign(player, editingPlayer.value);
+        if (player.injured && player.injuryGamesLeft <= 0) {
+          player.injuryGamesLeft = 3; // Default to 3 games if injured and not specified
+        }
+        if (!player.injured) {
+            player.injuryGamesLeft = 0;
+        }
+      }
+      
+      selectedPlayerToEdit.value = null;
+      editingPlayer.value = null;
+    };
+    
+    // Award Golden Boot
+    const awardGoldenBoot = () => {
+      if (currentDay.value === schedule.value.length - 1) {
+        // Find player with most goals
+        const players = footballers.value.filter(p => p.goals > 0)
+          .sort((a, b) => b.goals - a.goals);
+        
+        if (players.length > 0) {
+          const winner = players[0];
+          winner.quality += 10;
+          winner.hasGoldenBoot = true;
+          
+          addNotification(`¡${winner.name} ha ganado la Bota de Oro con ${winner.goals} goles!`, 'general');
+        }
+      }
+    };
+    
     return {
       // Estado
       gameState,
@@ -2052,6 +2179,10 @@ const app = createApp({
       chatRecipient,
       unreadChatMessages,
       inventoryFilter,
+      isMobileUI,
+      devMode,
+      selectedPlayerToEdit,
+      editingPlayer,
       
       // Computed
       userATQPlayers,
@@ -2102,7 +2233,12 @@ const app = createApp({
       toggleChat,
       sendChatMessage,
       formatChatTime,
-      generateMatchNarrative
+      generateMatchNarrative,
+      checkBannedWords,
+      toggleMobileUI,
+      editPlayer,
+      savePlayerEdits,
+      awardGoldenBoot
     };
   }
 }).mount('#app');

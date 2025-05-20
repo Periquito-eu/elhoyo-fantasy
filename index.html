@@ -2,6 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>ElHoyo Fantasy</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -18,6 +20,11 @@
         <header>
             <div class="logo">
                 <h1>ElHoyo Fantasy</h1>
+            </div>
+            <div class="mobile-toggle">
+              <button @click="toggleMobileUI" class="mobile-btn">
+                {{ isMobileUI ? 'Vista Normal' : 'Vista Móvil' }}  
+              </button>
             </div>
             <div class="user-info" v-if="currentUser">
                 <span>{{ currentUser.nickname }}</span>
@@ -99,11 +106,11 @@
                     <div class="players-list">
                         <div v-for="(player, index) in getStandingsForDay" :key="player.id" 
                              class="player-card" 
-                             :class="{ 'current-player': player.id === currentUser.id }"
+                             :class="{ 'current-player': player.id === currentUser?.id }"
                              @click="showPlayerSquad(player)">
                             <div class="player-rank">{{ index + 1 }}</div>
                             <div class="player-info">
-                                <h3>{{ player.nickname }} {{ player.id === currentUser.id ? '(Tú)' : '(IA)' }}</h3>
+                                <h3>{{ player.nickname }} {{ player.id === currentUser?.id ? '(Tú)' : (player.isAI ? '(IA)' : '') }}</h3>
                                 <div class="player-stats">
                                     <div>Dinero: {{ formatMoney(player.money) }}</div>
                                     <div>Puntos totales: {{ getPlayerPointsForDay(player) }}</div>
@@ -115,13 +122,13 @@
                 </div>
 
                 <!-- Plantilla -->
-                <div v-if="currentTab === 'squad'" class="container">
+                <div v-if="currentTab === 'squad' && currentUser" class="container">
                     <h2>Tu Plantilla</h2>
                     <div class="squad-container">
                         <div class="squad-info">
                             <div class="squad-stats">
                                 <div>Valor total: {{ formatMoney(calculateSquadValue(currentUser)) }}</div>
-                                <div>Jugadores: {{ currentUser.squad.length }}/9</div>
+                                <div>Jugadores: {{ currentUser?.squad?.length ?? 0 }}/9</div>
                             </div>
                             <div class="squad-formation">
                                 <span>Formación: 3-3-3</span>
@@ -130,7 +137,7 @@
                         <div class="formation">
                             <div class="row atq-row">
                                 <div v-for="player in userATQPlayers" :key="player.id" class="player-position">
-                                    <div class="player-card squad-card">
+                                    <div class="player-card squad-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                         <div class="player-name">{{ player.name }}</div>
                                         <div class="player-team">{{ player.team }}</div>
                                         <div class="player-stats">
@@ -142,12 +149,13 @@
                                         <div class="squad-actions">
                                             <button @click="moveToInventory(player)" class="action-btn">Enviar a inventario</button>
                                         </div>
+                                        <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row mce-row">
                                 <div v-for="player in userMCEPlayers" :key="player.id" class="player-position">
-                                    <div class="player-card squad-card">
+                                    <div class="player-card squad-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                         <div class="player-name">{{ player.name }}</div>
                                         <div class="player-team">{{ player.team }}</div>
                                         <div class="player-stats">
@@ -159,12 +167,13 @@
                                         <div class="squad-actions">
                                             <button @click="moveToInventory(player)" class="action-btn">Enviar a inventario</button>
                                         </div>
+                                        <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                     </div>
                                 </div>
                             </div>
                             <div class="row dfc-row">
                                 <div v-for="player in userDFCPlayers" :key="player.id" class="player-position">
-                                    <div class="player-card squad-card">
+                                    <div class="player-card squad-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                         <div class="player-name">{{ player.name }}</div>
                                         <div class="player-team">{{ player.team }}</div>
                                         <div class="player-stats">
@@ -176,13 +185,14 @@
                                         <div class="squad-actions">
                                             <button @click="moveToInventory(player)" class="action-btn">Enviar a inventario</button>
                                         </div>
+                                        <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="inventory-section">
+                    <div v-if="currentUser" class="inventory-section">
                         <h3>Tu Inventario</h3>
                         <div class="inventory-filter">
                             <select v-model="inventoryFilter">
@@ -194,7 +204,7 @@
                         </div>
                         <div class="inventory-players">
                             <div v-for="player in filteredInventory" :key="player.id" class="inventory-card">
-                                <div class="player-card">
+                                <div class="player-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                     <div class="player-name">{{ player.name }}</div>
                                     <div class="player-team">{{ player.team }}</div>
                                     <div class="player-stats">
@@ -206,6 +216,7 @@
                                     <div class="inventory-actions">
                                         <button @click="moveToSquad(player)" class="action-btn" :disabled="!canAddToSquad(player)">Añadir a plantilla</button>
                                     </div>
+                                     <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +231,7 @@
                             <h3>Jugadores disponibles</h3>
                             <div class="market-players">
                                 <div v-for="player in marketPlayers" :key="player.id" class="market-card">
-                                    <div class="player-card">
+                                    <div class="player-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                         <div class="player-name">{{ player.name }}</div>
                                         <div class="player-team">{{ player.team }}</div>
                                         <div class="player-stats">
@@ -229,15 +240,16 @@
                                             <div>Posición: {{ player.position }}</div>
                                         </div>
                                         <button @click="buyPlayer(player)" class="market-btn" :disabled="!canBuyPlayer(player)">Comprar</button>
+                                        <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="market-section">
+                        <div class="market-section" v-if="currentUser">
                             <h3>Tus jugadores para vender</h3>
                             <div class="market-players">
-                                <div v-for="player in [...currentUser.squad, ...playerInventory]" :key="player.id" class="market-card">
-                                    <div class="player-card">
+                                <div v-for="player in [...(currentUser?.squad ?? []), ...playerInventory]" :key="player.id" class="market-card">
+                                    <div class="player-card" :class="{ 'golden-boot': player.hasGoldenBoot, 'injured': player.injured }">
                                         <div class="player-name">{{ player.name }}</div>
                                         <div class="player-team">{{ player.team }}</div>
                                         <div class="player-stats">
@@ -250,6 +262,7 @@
                                             <button @click="sellPlayer(player)" class="market-btn sell" :disabled="!canSellPlayer(player)">Vender ({{ formatMoney(player.cost) }})</button>
                                             <button @click="addToMarket(player)" class="market-btn offer">Poner en el mercado</button>
                                         </div>
+                                         <span v-if="player.injured" class="injury-badge">LESIONADO ({{ player.injuryGamesLeft }} partidos)</span>
                                     </div>
                                 </div>
                             </div>
@@ -472,11 +485,11 @@
                                 class="player-card" 
                                 :class="{ 
                                     'winner': index === 0,
-                                    'current-player': player.id === currentUser.id 
+                                    'current-player': player.id === currentUser?.id 
                                 }">
                                 <div class="player-rank">{{ index + 1 }}</div>
                                 <div class="player-info">
-                                    <h3>{{ player.nickname }} {{ player.id === currentUser.id ? '(Tú)' : '(IA)' }}</h3>
+                                    <h3>{{ player.nickname }} {{ player.id === currentUser?.id ? '(Tú)' : (player.isAI ? '(IA)' : '') }}</h3>
                                     <div class="player-stats">
                                         <div>Puntos totales: {{ player.totalPoints }}</div>
                                     </div>
@@ -571,6 +584,53 @@
                 </div>
                 <button @click="closePlayerModal" class="primary-btn">Cerrar</button>
             </div>
+        </div>
+
+        <div v-if="devMode" class="dev-panel">
+          <h3>Modo Desarrollador</h3>
+          <div class="dev-controls">
+            <div class="dev-section">
+              <h4>Editar Jugador</h4>
+              <select v-model="selectedPlayerToEdit">
+                <option value="">Seleccionar jugador...</option>
+                <option v-for="player in footballers" :value="player.id">
+                  {{ player.name }} ({{ player.team }})
+                </option>
+              </select>
+              
+              <div v-if="selectedPlayerToEdit && editingPlayer" class="player-edit-form">
+                <div class="form-group">
+                  <label>Nombre:</label>
+                  <input v-model="editingPlayer.name" type="text">
+                </div>
+                <div class="form-group">
+                  <label>Coste:</label>
+                  <input v-model.number="editingPlayer.cost" type="number">
+                </div>
+                <div class="form-group">
+                  <label>Calidad:</label>
+                  <input v-model.number="editingPlayer.quality" type="number">
+                </div>
+                <div class="form-group">
+                  <label>Premios:</label>
+                  <label>
+                    <input type="checkbox" v-model="editingPlayer.hasGoldenBoot">
+                    Bota de Oro
+                  </label>
+                </div>
+                <div class="form-group">
+                  <label>Lesionado:</label>
+                  <label>
+                    <input type="checkbox" v-model="editingPlayer.injured">
+                    Lesionado
+                  </label>
+                  <label v-if="editingPlayer.injured">Partidos restantes:</label>
+                  <input v-if="editingPlayer.injured" v-model.number="editingPlayer.injuryGamesLeft" type="number" min="1">
+                </div>
+                <button @click="savePlayerEdits" class="primary-btn">Guardar Cambios</button>
+              </div>
+            </div>
+          </div>
         </div>
 
         <footer>

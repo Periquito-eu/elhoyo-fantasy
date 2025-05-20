@@ -218,6 +218,16 @@ main {
     border: 1px solid var(--border-color);
 }
 
+.player-card.golden-boot {
+  background: linear-gradient(45deg, #ffd700, #ffec8b);
+  border: 2px solid #daa520;
+}
+
+.player-card.injured {
+  opacity: 0.7;
+  border: 2px solid #ff4444;
+}
+
 .current-player {
     border-left: 4px solid var(--primary-color);
 }
@@ -993,6 +1003,107 @@ footer {
 .modal-content h2 {
     text-align: center;
     margin-bottom: 20px;
+}
+
+/* Dev mode panel */
+.dev-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  z-index: 1000;
+  max-width: 400px;
+}
+
+.dev-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.dev-section {
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+}
+
+.player-edit-form {
+  margin-top: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Mobile UI toggle */
+.mobile-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.mobile-btn {
+  padding: 10px 20px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Mobile UI styles */
+.mobile-ui {
+  /* Override grid layouts to stack vertically */
+  .market-players,
+  .inventory-players,
+  .squad-list,
+  .players-list {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Stack header elements */
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  /* Full width elements */
+  .container {
+    padding: 10px;
+  }
+  
+  /* Adjust navigation */
+  nav ul {
+    flex-direction: column;
+  }
+  
+  nav ul li {
+    width: 100%;
+  }
+  
+  /* Stack formation */
+  .formation {
+    flex-direction: column;
+  }
+  
+  .row {
+    margin: 10px 0;
+  }
+}
+
+.injury-badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: #ff4444;
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.8em;
 }
 
 /* Responsive adjustments */
